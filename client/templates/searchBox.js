@@ -18,6 +18,7 @@ Template.searchBox.onRendered(
 		  }).data("ui-autocomplete")._renderItem = function(ul, item) {
 		    var listItemHtml;
 		    listItemHtml = "<a href=\"/product/" + item.id + "\"> " + item.value + "\n  <span class=\"search-item-price\">\n    $" + item.price + "\n  </span>\n</a>";
+				//listItemHtml = '<a href="'+ReactionRouter.pathFor('/product/', item.id)+'"> ' + item.value + '\n	<span class="search-item-price">\n		$' + item.price + '\n	</span>\n</a>';
 		    return $("<li>").html(listItemHtml).appendTo(ul);
 		  };
 		  $('#searchBoxDate').datepicker();
@@ -36,7 +37,8 @@ Template.searchBox.onRendered(
 		    }
 		  }).data("ui-autocomplete")._renderItem = function(ul, item) {
 		    var listItemHtml;
-		    listItemHtml = "<a href=\"/product/" + item.id + "\"> " + item.value + "\n	<span class=\"search-item-price\">\n		$" + item.price + "\n	</span>\n</a>";
+//		    listItemHtml = '<a href="/product/' + item.id + '"> ' + item.value + '\n	<span class="search-item-price">\n		$' + item.price + '\n	</span>\n</a>';
+				listItemHtml = '<a href="'+ReactionRouter.pathFor('product', item.id)+'"> ' + item.value + '\n	<span class="search-item-price">\n		$' + item.price + '\n	</span>\n</a>';
 		    return $("<li>").html(listItemHtml).appendTo(ul);
 		  };
 		}, 1000);
