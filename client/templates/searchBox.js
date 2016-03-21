@@ -21,21 +21,26 @@ Template.searchBox.onRendered(
 				//listItemHtml = '<a href="'+ReactionRouter.pathFor('/product/', item.id)+'"> ' + item.value + '\n	<span class="search-item-price">\n		$' + item.price + '\n	</span>\n</a>';
 		    return $("<li>").html(listItemHtml).appendTo(ul);
 		  };
-		  $('#searchBoxDate').datepicker();
-		  return $("#searchBoxDate").autocomplete({
-		    minLength: 8,
+
+      $('#searchBoxDate').datepicker();
+		  $('#searchBoxDate').datepicker( "option", "dateFormat", "yy-mm-dd");
+      $("#searchBoxDate").autocomplete({
+          minLength: 8
+        },{
 		    source: function(request, response) {
-		      console.log("search date " + new Date(request.term));
+		      console.log(request);
 		      return Meteor.call("searchProductsByDate", request.term, function(error, result) {
 		        if (error) {
 		          console.log(error);
 		        }
 		        if (result) {
+              console.log(response(result));
 		          return response(result);
 		        }
 		      });
 		    }
-		  }).data("ui-autocomplete")._renderItem = function(ul, item) {
+		  })
+        .data("ui-autocomplete")._renderItem = function(ul, item) {
 		    var listItemHtml;
 //		    listItemHtml = '<a href="/product/' + item.id + '"> ' + item.value + '\n	<span class="search-item-price">\n		$' + item.price + '\n	</span>\n</a>';
 				listItemHtml = '<a href="'+ReactionRouter.pathFor('product', item.id)+'"> ' + item.value + '\n	<span class="search-item-price">\n		$' + item.price + '\n	</span>\n</a>';

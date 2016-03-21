@@ -20,16 +20,18 @@ Meteor.methods({
       listItem = {
         value: product.title,
         id: product._id,
-        price: product.variants[0].price
+        price: product.price
       };
       return this.push(listItem);
     }), autocompleteList);
     return autocompleteList;
   },
+
   searchProductsByDate: function(date) {
     var autocompleteList, isoDate, searchResults;
     check(date, String);
     isoDate = new Date(date);
+    console.log(isoDate);
     ReactionCore.Log.info("searching prods with date: ", isoDate);
     searchResults = ReactionCore.Collections.Products.find({
       forSaleOnDate: isoDate
@@ -47,7 +49,7 @@ Meteor.methods({
       listItem = {
         value: product.title,
         id: product._id,
-        price: product.variants[0].price
+        //price: product.price
       };
       return this.push(listItem);
     }), autocompleteList);
