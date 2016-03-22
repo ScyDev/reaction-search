@@ -20,26 +20,33 @@ Meteor.methods({
       listItem = {
         value: product.title,
         id: product._id,
-        price: product.variants[0].price
+        price: product.price
       };
       return this.push(listItem);
     }), autocompleteList);
     return autocompleteList;
   },
+
   searchProductsByDate: function(date) {
     var autocompleteList, isoDate, searchResults;
     check(date, String);
-    isoDate = new Date(date);
-    ReactionCore.Log.info("searching prods with date: ", isoDate);
+    //isoDate = new Date(date);
+    //ReactionCore.Log.info("searching prods with date: ", isoDate);
     searchResults = ReactionCore.Collections.Products.find({
-      forSaleOnDate: isoDate
+      "forSaleOnDate":  {
+        "$gte": new Date(date+"T00:00:00.000Z"),
+        "$lte": new Date(date+"T23:59:59.000Z")
+      }
     }, {
       fields: {
         _id: 1,
         title: 1,
-        variants: 1
+        variants: 1,
+        description: 1,
+        price: 1
       }
     });
+    console.log('searchResults' , searchResults);
     autocompleteList = [];
     searchResults.forEach((function(product) {
       var listItem;
@@ -47,7 +54,8 @@ Meteor.methods({
       listItem = {
         value: product.title,
         id: product._id,
-        price: product.variants[0].price
+        description: product.description,
+        price: product.price
       };
       return this.push(listItem);
     }), autocompleteList);
