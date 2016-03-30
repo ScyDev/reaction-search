@@ -85,10 +85,7 @@ Template.searchBox.events(
 	{
 			"change #searchBoxDate": function(event) {
 				const value = event.target.value;
-				let filterDate = new Date(moment(value, "DD.MM.YYYY").format('MM/DD/YYYY')); //new Date(value);
-				if (filterDate.toString() == "Invalid Date") {
-					filterDate = null;
-				}
+				let filterDate = value; 
 				console.log("search date new: ",filterDate," old: ",Session.get('productFilters/forSaleOnDate'));
 				Session.set('productFilters/forSaleOnDate', filterDate);
 			},
