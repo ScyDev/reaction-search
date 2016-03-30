@@ -15,7 +15,9 @@ Template.searchBox.onCreated(
 
 Template.searchBox.onRendered(
 	function() {
-	  $('#searchBoxDate').datepicker();
+	  $('#searchBoxDate').datepicker({
+			format: "dd.mm.yyyy"
+		});
 
 		GoogleMaps.load();
 
@@ -83,7 +85,7 @@ Template.searchBox.events(
 	{
 			"change #searchBoxDate": function(event) {
 				const value = event.target.value;
-				let filterDate = new Date(value);
+				let filterDate = new Date(moment(value, "DD.MM.YYYY").format('MM/DD/YYYY')); //new Date(value);
 				if (filterDate.toString() == "Invalid Date") {
 					filterDate = null;
 				}
