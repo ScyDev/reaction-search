@@ -1,7 +1,20 @@
 
+Template.searchBox.onCreated(
+	function() {
+		// session does not survive page reload?!?
+		if (Session.get('productFilters/forSaleOnDate') != null) {
+			$('#searchBoxDate').val(Session.get('productFilters/forSaleOnDate'));
+		}
+		if (Session.get('productFilters/location') != null) {
+			// can't use resolved lat/long! need to store original location search string too
+			$('#searchBoxLocation').val(Session.get('productFilters/location'));
+		}
+	}
+);
+
+
 Template.searchBox.onRendered(
 	function() {
-
 	  $('#searchBoxDate').datepicker();
 
 		GoogleMaps.load();
@@ -54,6 +67,15 @@ Template.searchBox.onRendered(
 			/*/
 
 		}, 1000);
+	}
+);
+
+Template.searchBox.helpers(
+	{
+		'session': function(input) {
+			console.log("session helper ",input);
+    	return Session.get(input);
+		}
 	}
 );
 
