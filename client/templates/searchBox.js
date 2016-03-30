@@ -62,34 +62,58 @@ Template.searchBox.events(
 			"change #searchBoxDate": function(event) {
 				const value = event.target.value;
 				let filterDate = new Date(value);
+				if (filterDate.toString() == "Invalid Date") {
+					filterDate = null;
+				}
 				console.log("search date new: ",filterDate," old: ",Session.get('productFilters/forSaleOnDate'));
 				Session.set('productFilters/forSaleOnDate', filterDate);
 			},
-			"change #searchBoxLocation": function(event) {
-				const value = event.target.value;
-				let addressString = value+", Switzerland";
-
-				if (GoogleMaps.loaded()) {
-					var geocoder = new google.maps.Geocoder();
-
-	        geocoder.geocode(
-	          {
-	            'address': addressString
-	          },
-	          function(results, status) {
-	             if(status == google.maps.GeocoderStatus.OK) {
-	                let location = results[0].geometry.location;
-	                console.log("resolved search : "+location.lat()+"/"+location.lng());
-
-									let filterLocation = location.lat()+"/"+location.lng();
-									console.log("search location new: ",filterLocation," old: ",Session.get('productFilters/location'));
-									Session.set('productFilters/location', filterLocation);
-	              }
-	          }
-	        );
-		    }
+			"keyup #searchBoxDate": function(event) {
+				console.log("keyup #searchBoxDate ",event.target.value);
+				return $("#searchBoxDate").trigger("change", event);
 			},
+			"change #searchBoxLocation": function(event) {
+				const inputAddress = event.target.value;
 
+				if (inputAddress == null || inputAddress.trim() == "") {
+					Session.set('productFilters/location', null);
+				}
+				else {
+					let addressString = inputAddress+", Switzerland";
+
+					if (GoogleMaps.loaded()) {
+						var geocoder = new google.maps.Geocoder();
+
+		        geocoder.geocode(
+		          {
+		            'address': addressString
+		          },
+		          function(results, status) {
+		             if(status == google.maps.GeocoderStatus.OK) {
+		                let location = results[0].geometry.location;
+										//console.log("resolved search : ",results);
+		                console.log("resolved search : "+location.lat()+"/"+location.lng());
+
+										// show this as autocomplete: results[0].formatted_address
+										console.log("nearest hit: ",results[0].formatted_address);
+
+										let filterLocation = location.lat()+"/"+location.lng();
+										console.log("search location new: ",filterLocation," old: ",Session.get('productFilters/location'));
+										Session.set('productFilters/location', filterLocation);
+		              }
+									else {
+										Session.set('productFilters/location', null);
+									}
+		          }
+		        );
+			    }
+				}
+			},
+			"keyup #searchBoxLocation": function(event) {
+				const inputAddress = event.target.value;
+				console.log("keyup #searchBoxLocation ",event.target.value);
+				return $("#searchBoxLocation").trigger("change", event);
+			},
 	}
 );
 
