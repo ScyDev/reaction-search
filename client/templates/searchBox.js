@@ -94,6 +94,11 @@ Template.searchBox.events(
 				console.log("keyup #searchBoxDate ",event.target.value);
 				return $("#searchBoxDate").trigger("change", event);
 			},
+			"click #searchBoxDateClear": function(event) {
+				console.log("click #searchBoxDateClear ");
+				$("#searchBoxDate").val("");
+				return $("#searchBoxDate").trigger("change", event);
+			},
 			"change #searchBoxLocation": function(event) {
 				const inputAddress = event.target.value;
 
@@ -134,6 +139,11 @@ Template.searchBox.events(
 			"keyup #searchBoxLocation": function(event) {
 				const inputAddress = event.target.value;
 				console.log("keyup #searchBoxLocation ",event.target.value);
+				return $("#searchBoxLocation").trigger("change", event);
+			},
+			"click #searchBoxLocationClear": function(event) {
+				console.log("click #searchBoxLocationClear ");
+				$("#searchBoxLocation").val("");
 				return $("#searchBoxLocation").trigger("change", event);
 			},
 	}
