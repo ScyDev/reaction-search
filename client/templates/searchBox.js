@@ -1,6 +1,13 @@
+
 Template.searchBox.onRendered(
 	function() {
+
+	  $('#searchBoxDate').datepicker();
+
+		GoogleMaps.load();
+
 		Meteor.setTimeout(function() {
+			/*
 		  $("#searchBox").autocomplete({
 		    minLength: 3
 		  }, {
@@ -20,9 +27,8 @@ Template.searchBox.onRendered(
 		    listItemHtml = "<a href=\"/product/" + item.id + "\"> " + item.value + "\n  <span class=\"search-item-price\">\n    $" + item.price + "\n  </span>\n</a>";
 				//listItemHtml = '<a href="'+ReactionRouter.pathFor('/product/', item.id)+'"> ' + item.value + '\n	<span class="search-item-price">\n		$' + item.price + '\n	</span>\n</a>';
 		    return $("<li>").html(listItemHtml).appendTo(ul);
-		  };
+		  }; */
 
-		  $('#searchBoxDate').datepicker();
 			/*
 		  return $("#searchBoxDate").autocomplete({
 		    minLength: 8,
@@ -59,18 +65,31 @@ Template.searchBox.events(
 				console.log("search date new: ",filterDate," old: ",Session.get('productFilters/forSaleOnDate'));
 				Session.set('productFilters/forSaleOnDate', filterDate);
 			},
+			"change #searchBoxLocation": function(event) {
+				const value = event.target.value;
+				let addressString = value+", Switzerland";
 
-			/*
-			or rather use moment lib, if necessary
-			--> moment(new Date(inDate)).format('DD.MM.YYYY');
+				if (GoogleMaps.loaded()) {
+					var geocoder = new google.maps.Geocoder();
 
-			searchResults = ReactionCore.Collections.Products.find({
-			      "forSaleOnDate":  {
-			        "$gte": new Date(date+"T00:00:00.000Z"),
-			        "$lte": new Date(date+"T23:59:59.000Z")
-			      }
-			    }
-			*/
+	        geocoder.geocode(
+	          {
+	            'address': addressString
+	          },
+	          function(results, status) {
+	             if(status == google.maps.GeocoderStatus.OK) {
+	                let location = results[0].geometry.location;
+	                console.log("resolved search : "+location.lat()+"/"+location.lng());
+
+									let filterLocation = location.lat()+"/"+location.lng();
+									console.log("search location new: ",filterLocation," old: ",Session.get('productFilters/location'));
+									Session.set('productFilters/location', filterLocation);
+	              }
+	          }
+	        );
+		    }
+			},
+
 	}
 );
 
