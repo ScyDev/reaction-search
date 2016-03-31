@@ -1,14 +1,7 @@
 
 Template.searchBox.onCreated(
 	function() {
-		// session does not survive page reload?!?
-		if (Session.get('productFilters/forSaleOnDate') != null) {
-			$('#searchBoxDate').val(Session.get('productFilters/forSaleOnDate'));
-		}
-		if (Session.get('productFilters/location') != null) {
-			// can't use resolved lat/long! need to store original location search string too
-			$('#searchBoxLocation').val(Session.get('productFilters/location'));
-		}
+
 	}
 );
 
@@ -18,6 +11,18 @@ Template.searchBox.onRendered(
 	  $('#searchBoxDate').datepicker({
 			format: "dd.mm.yyyy"
 		});
+
+		// session does not survive page reload?!?
+		if (Session.get('productFilters/forSaleOnDate') != null && $('#searchBoxDate').val() == "") {
+			console.log("setting #searchBoxDate val from session: "+Session.get('productFilters/forSaleOnDate'));
+			$('#searchBoxDate').val(Session.get('productFilters/forSaleOnDate'));
+		}
+		//console.log("wanna set #searchBoxLocation val from session: "+Session.get('productFilters/locationUserInput')+" "+Session.get('productFilters/location'));
+		if (Session.get('productFilters/locationUserInput') != null && $('#searchBoxLocation').val() == "") {
+			// can't use resolved lat/long! need to store original location search string too
+			console.log("setting #searchBoxLocation val from session: "+Session.get('productFilters/locationUserInput'));
+			$('#searchBoxLocation').val(Session.get('productFilters/locationUserInput'));
+		}
 
 		GoogleMaps.load();
 
@@ -85,7 +90,7 @@ Template.searchBox.events(
 	{
 			"change #searchBoxDate": function(event) {
 				const value = event.target.value;
-				let filterDate = value; 
+				let filterDate = value;
 				console.log("search date new: ",filterDate," old: ",Session.get('productFilters/forSaleOnDate'));
 				Session.set('productFilters/forSaleOnDate', filterDate);
 			},
@@ -103,6 +108,7 @@ Template.searchBox.events(
 
 				if (inputAddress == null || inputAddress.trim() == "") {
 					Session.set('productFilters/location', null);
+					Session.set('productFilters/locationUserInput', null);
 				}
 				else {
 					let addressString = inputAddress+", Switzerland";
@@ -126,9 +132,11 @@ Template.searchBox.events(
 										let filterLocation = location.lat()+"/"+location.lng();
 										console.log("search location new: ",filterLocation," old: ",Session.get('productFilters/location'));
 										Session.set('productFilters/location', filterLocation);
+										Session.set('productFilters/locationUserInput', inputAddress);
 		              }
 									else {
 										Session.set('productFilters/location', null);
+										Session.set('productFilters/locationUserInput', null);
 									}
 		          }
 		        );
