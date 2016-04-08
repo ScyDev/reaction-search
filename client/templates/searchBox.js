@@ -24,6 +24,23 @@ Template.searchBox.onRendered(
 			$('#searchBoxLocation').val(Session.get('productFilters/locationUserInput'));
 		}
 
+		// search params from route
+		if (ReactionRouter.current().route.name == "productsSearchPage") {
+			let searchDate = ReactionRouter.getParam("date");
+			let searchLocation = ReactionRouter.getParam("location");
+
+			console.log(searchDate+" "+searchLocation+" ",ReactionRouter.current().route);
+			
+			if (searchDate != null) {
+				$('#searchBoxDate').val(searchDate);
+				$('#searchBoxDate').trigger("change");
+			}
+			if (searchLocation != null) {
+				$('#searchBoxLocation').val(searchLocation);
+				$('#searchBoxLocation').trigger("change");
+			}
+		}
+
 		GoogleMaps.load();
 
 		Meteor.setTimeout(function() {
