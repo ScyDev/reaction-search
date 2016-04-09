@@ -30,7 +30,7 @@ Template.searchBox.onRendered(
 			let searchLocation = ReactionRouter.getParam("location");
 
 			console.log(searchDate+" "+searchLocation+" ",ReactionRouter.current().route);
-			
+
 			if (searchDate != null) {
 				$('#searchBoxDate').val(searchDate);
 				$('#searchBoxDate').trigger("change");
@@ -152,7 +152,9 @@ Template.searchBox.events(
 										Session.set('productFilters/locationUserInput', inputAddress);
 		              }
 									else {
-										Session.set('productFilters/location', null);
+										console.log("geocoder fail: ",results," ",status);
+
+										Session.set('productFilters/location', "9999999999999999,99999999999999999");
 										Session.set('productFilters/locationUserInput', null);
 									}
 		          }
