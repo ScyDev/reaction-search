@@ -150,12 +150,24 @@ Template.searchBox.events(
 										console.log("search location new: ",filterLocation," old: ",Session.get('productFilters/location'));
 										Session.set('productFilters/location', filterLocation);
 										Session.set('productFilters/locationUserInput', inputAddress);
+
+										if (inputAddress != null && inputAddress != "" && results[0].formatted_address != "Switzerland") {
+											$("#geocoderResult").html(results[0].formatted_address);
+											$("#geocoderResultContainer").show();
+										}
+										else {
+											$("#geocoderResult").html(i18next.t("products.noLocationFound", {defaultValue: "No location found"}));
+											//$("#geocoderResultContainer").hide();
+										}
 		              }
 									else {
 										console.log("geocoder fail: ",results," ",status);
 
 										Session.set('productFilters/location', "9999999999999999,99999999999999999");
 										Session.set('productFilters/locationUserInput', null);
+
+										$("#geocoderResult").html(i18next.t("products.noLocationFound", {defaultValue: "No location found"}));
+										//$("#geocoderResultContainer").hide();
 									}
 		          }
 		        );
