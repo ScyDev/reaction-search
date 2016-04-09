@@ -35,62 +35,24 @@ Template.searchBox.onRendered(
 				$('#searchBoxDate').val(searchDate);
 				$('#searchBoxDate').trigger("change");
 			}
+
 			if (searchLocation != null) {
-				$('#searchBoxLocation').val(searchLocation);
-				$('#searchBoxLocation').trigger("change");
+				let mapsLoadedCheckInterval = Meteor.setInterval(function() {
+					console.log("checking if GoogleMaps loaded...");
+					if (GoogleMaps.loaded()) {
+						Meteor.clearInterval(mapsLoadedCheckInterval);
+						console.log("cleared mapsLoadedCheckInterval");
+
+						$('#searchBoxLocation').val(searchLocation);
+						$('#searchBoxLocation').trigger("change");
+					}
+				}, 200);
 			}
+
 		}
 
 		GoogleMaps.load();
 
-		Meteor.setTimeout(function() {
-			/*
-		  $("#searchBox").autocomplete({
-		    minLength: 3
-		  }, {
-		    source: function(request, response) {
-		      console.log("search term " + request.term);
-		      return Meteor.call("searchProducts", request.term, function(error, result) {
-		        if (error) {
-		          console.log(error);
-		        }
-		        if (result) {
-		          return response(result);
-		        }
-		      });
-		    }
-		  }).data("ui-autocomplete")._renderItem = function(ul, item) {
-		    var listItemHtml;
-		    listItemHtml = "<a href=\"/product/" + item.id + "\"> " + item.value + "\n  <span class=\"search-item-price\">\n    $" + item.price + "\n  </span>\n</a>";
-				//listItemHtml = '<a href="'+ReactionRouter.pathFor('/product/', item.id)+'"> ' + item.value + '\n	<span class="search-item-price">\n		$' + item.price + '\n	</span>\n</a>';
-		    return $("<li>").html(listItemHtml).appendTo(ul);
-		  }; */
-
-			/*
-		  return $("#searchBoxDate").autocomplete({
-		    minLength: 8,
-		    source: function(request, response) {
-					let filterDate = new Date(request.term);
-		      console.log("search date new: ",filterDate," old: ",Session.get('productFilters/forSaleOnDate'));
-					Session.set('productFilters/forSaleOnDate', filterDate);
-		      return Meteor.call("searchProductsByDate", request.term, function(error, result) {
-		        if (error) {
-		          console.log(error);
-		        }
-		        if (result) {
-		          return response(result);
-		        }
-		      });
-		    }
-		  }).data("ui-autocomplete")._renderItem = function(ul, item) {
-		    var listItemHtml;
-//		    listItemHtml = '<a href="/product/' + item.id + '"> ' + item.value + '\n	<span class="search-item-price">\n		$' + item.price + '\n	</span>\n</a>';
-				listItemHtml = '<a href="'+ReactionRouter.pathFor('product', item.id)+'"> ' + item.value + '\n	<span class="search-item-price">\n		$' + item.price + '\n	</span>\n</a>';
-		    return $("<li>").html(listItemHtml).appendTo(ul);
-		  };
-			/*/
-
-		}, 1000);
 	}
 );
 
