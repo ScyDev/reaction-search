@@ -152,7 +152,7 @@ Template.searchBox.events(
 										Session.set('productFilters/locationUserInput', inputAddress);
 
 										if (inputAddress != null && inputAddress != "" && results[0].formatted_address != "Switzerland") {
-											$("#geocoderResult").html(results[0].formatted_address);
+											$("#geocoderResult").html(results[0].formatted_address.replace(", Switzerland", ""));
 											$("#geocoderResultContainer").show();
 										}
 										else {
