@@ -48,7 +48,6 @@ Template.searchBox.onRendered(
 					}
 				}, 200);
 			}
-
 		}
 
 		GoogleMaps.load();
@@ -88,6 +87,7 @@ Template.searchBox.events(
 				if (inputAddress == null || inputAddress.trim() == "") {
 					Session.set('productFilters/location', null);
 					Session.set('productFilters/locationUserInput', null);
+					$("#geocoderResultContainer").hide();
 				}
 				else {
 					let addressString = inputAddress+", Switzerland";
