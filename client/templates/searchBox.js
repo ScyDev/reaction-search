@@ -64,6 +64,8 @@ Template.searchBox.helpers(
 	}
 );
 
+let geocoderTimeout = null;
+
 Template.searchBox.events(
 	{
 			"change #searchBoxDate": function(event) {
@@ -82,59 +84,70 @@ Template.searchBox.events(
 				return $("#searchBoxDate").trigger("change", event);
 			},
 			"change #searchBoxLocation": function(event) {
-				const inputAddress = event.target.value;
-
-				if (inputAddress == null || inputAddress.trim() == "") {
-					Session.set('productFilters/location', null);
-					Session.set('productFilters/locationUserInput', null);
-					$("#geocoderResultContainer").hide();
+				if (geocoderTimeout != null) {
+					console.log("clearing geocoderTimeout");
+					Meteor.clearTimeout(geocoderTimeout);
 				}
-				else {
-					let addressString = inputAddress+", Switzerland";
 
-					if (GoogleMaps.loaded()) {
-						var geocoder = new google.maps.Geocoder();
+				console.log("adding geocoderTimeout");
+				geocoderTimeout = Meteor.setTimeout(function() {
+					console.log("executing geocoderTimeout");
+					
+					const inputAddress = event.target.value;
 
-		        geocoder.geocode(
-		          {
-		            'address': addressString
-		          },
-		          function(results, status) {
-		             if(status == google.maps.GeocoderStatus.OK) {
-		                let location = results[0].geometry.location;
-										//console.log("resolved search : ",results);
-		                console.log("resolved search : "+location.lat()+"/"+location.lng());
+					if (inputAddress == null || inputAddress.trim() == "") {
+						Session.set('productFilters/location', null);
+						Session.set('productFilters/locationUserInput', null);
+						$("#geocoderResultContainer").hide();
+					}
+					else {
+						let addressString = inputAddress+", Switzerland";
 
-										// show this as autocomplete: results[0].formatted_address
-										console.log("nearest hit: ",results[0].formatted_address);
+						if (GoogleMaps.loaded()) {
+							var geocoder = new google.maps.Geocoder();
 
-										let filterLocation = location.lat()+"/"+location.lng();
-										console.log("search location new: ",filterLocation," old: ",Session.get('productFilters/location'));
-										Session.set('productFilters/location', filterLocation);
-										Session.set('productFilters/locationUserInput', inputAddress);
+			        geocoder.geocode(
+			          {
+			            'address': addressString
+			          },
+			          function(results, status) {
+			             if(status == google.maps.GeocoderStatus.OK) {
+			                let location = results[0].geometry.location;
+											//console.log("resolved search : ",results);
+			                console.log("resolved search : "+location.lat()+"/"+location.lng());
 
-										if (inputAddress != null && inputAddress != "" && results[0].formatted_address != "Switzerland") {
-											$("#geocoderResult").html(results[0].formatted_address.replace(", Switzerland", ""));
-											$("#geocoderResultContainer").show();
-										}
+											// show this as autocomplete: results[0].formatted_address
+											console.log("nearest hit: ",results[0].formatted_address);
+
+											let filterLocation = location.lat()+"/"+location.lng();
+											console.log("search location new: ",filterLocation," old: ",Session.get('productFilters/location'));
+											Session.set('productFilters/location', filterLocation);
+											Session.set('productFilters/locationUserInput', inputAddress);
+
+											if (inputAddress != null && inputAddress != "" && results[0].formatted_address != "Switzerland") {
+												$("#geocoderResult").html(results[0].formatted_address.replace(", Switzerland", ""));
+												$("#geocoderResultContainer").show();
+											}
+											else {
+												$("#geocoderResult").html(i18next.t("products.noLocationFound", {defaultValue: "No location found"}));
+												//$("#geocoderResultContainer").hide();
+											}
+			              }
 										else {
+											console.log("geocoder fail: ",results," ",status);
+
+											Session.set('productFilters/location', "9999999999999999,99999999999999999");
+											Session.set('productFilters/locationUserInput', null);
+
 											$("#geocoderResult").html(i18next.t("products.noLocationFound", {defaultValue: "No location found"}));
 											//$("#geocoderResultContainer").hide();
 										}
-		              }
-									else {
-										console.log("geocoder fail: ",results," ",status);
+			          }
+			        );
+				    }
+					}
 
-										Session.set('productFilters/location', "9999999999999999,99999999999999999");
-										Session.set('productFilters/locationUserInput', null);
-
-										$("#geocoderResult").html(i18next.t("products.noLocationFound", {defaultValue: "No location found"}));
-										//$("#geocoderResultContainer").hide();
-									}
-		          }
-		        );
-			    }
-				}
+				}, 500);
 			},
 			"keyup #searchBoxLocation": function(event) {
 				const inputAddress = event.target.value;
