@@ -92,7 +92,7 @@ Template.searchBox.events(
 				console.log("adding geocoderTimeout");
 				geocoderTimeout = Meteor.setTimeout(function() {
 					console.log("executing geocoderTimeout");
-					
+
 					const inputAddress = event.target.value;
 
 					if (inputAddress == null || inputAddress.trim() == "") {
@@ -108,23 +108,37 @@ Template.searchBox.events(
 
 			        geocoder.geocode(
 			          {
-			            'address': addressString
-			          },
+			            'address': addressString,
+									'language': 'dfgfdgh',
+									//'result_type': 'street_address|locality' // not available on client geocode API
+									componentRestrictions: {
+							      country: 'CH',
+							      //postalCode: '2000'
+							    }
+
+								},
 			          function(results, status) {
 			             if(status == google.maps.GeocoderStatus.OK) {
 			                let location = results[0].geometry.location;
 											//console.log("resolved search : ",results);
-			                console.log("resolved search : "+location.lat()+"/"+location.lng());
+			                console.log("resolved search : "+location.lat()+"/"+location.lng()+" results: ",results);
+											let properLocationFound = false;
 
-											// show this as autocomplete: results[0].formatted_address
-											console.log("nearest hit: ",results[0].formatted_address);
+											if (results[0].types[0] == "postal_code"
+											 		|| results[0].types[0] == "locality"
+													|| results[0].types[0] == "street_address") {
+												// show this as autocomplete: results[0].formatted_address
+												console.log("nearest hit: ",results[0].formatted_address);
 
-											let filterLocation = location.lat()+"/"+location.lng();
-											console.log("search location new: ",filterLocation," old: ",Session.get('productFilters/location'));
-											Session.set('productFilters/location', filterLocation);
-											Session.set('productFilters/locationUserInput', inputAddress);
+												let filterLocation = location.lat()+"/"+location.lng();
+												console.log("search location new: ",filterLocation," old: ",Session.get('productFilters/location'));
+												Session.set('productFilters/location', filterLocation);
+												Session.set('productFilters/locationUserInput', inputAddress);
 
-											if (inputAddress != null && inputAddress != "" && results[0].formatted_address != "Switzerland") {
+												properLocationFound = true;
+											}
+
+											if (properLocationFound && inputAddress != null && inputAddress != "" && results[0].formatted_address != "Switzerland") {
 												$("#geocoderResult").html(results[0].formatted_address.replace(", Switzerland", ""));
 												$("#geocoderResultContainer").show();
 											}
