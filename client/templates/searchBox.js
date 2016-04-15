@@ -101,7 +101,7 @@ Template.searchBox.events(
 						$("#geocoderResultContainer").hide();
 					}
 					else {
-						let addressString = inputAddress+", Switzerland";
+						let addressString = inputAddress;//+", Switzerland";
 
 						if (GoogleMaps.loaded()) {
 							var geocoder = new google.maps.Geocoder();
