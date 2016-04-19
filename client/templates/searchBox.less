@@ -5,6 +5,7 @@
 }
 
 .searchBox {
+	position: relative;
 	float: left;
 	min-width: 220px;
 	width: 50%;
@@ -51,4 +52,17 @@
 .input-clear-icon {
 	margin-left: -20px;
 	margin-right: 20px;
+}
+
+#geocoderResultContainer {
+	position: absolute;
+  top: -35px;
+  min-width: 200px;
+}
+@media screen and (max-width: 480px) {
+  #geocoderResultContainer {
+		top: -8px;
+		left: 20px;
+		padding: 2px;
+  }
 }

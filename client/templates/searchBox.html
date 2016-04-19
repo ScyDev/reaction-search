@@ -13,15 +13,16 @@
 		</div>
 
 		<div class="searchBox">
+			<div id="geocoderResultContainer" style="display: none;" class="alert alert-warning">
+				<!--<span data-i18n="productDetail.isNotVisible">This product is not visible to customers.</span>-->
+				<span id="geocoderResult"></span>
+			</div>
+			
 			<label for="searchBoxLocation" class="control-label" data-i18n="shop.search.searchBoxLocationLabel">Place</label>
 			<br/>
 			<input type="text" id="searchBoxLocation" placeholder="{{i18n 'shop.search.searchBoxLocationPlaceholder' 'By Location...'}}">
 			<span id="searchBoxLocationClear" ><i class="input-clear-icon fa fa-times-circle"></i></span>
 
-			<div id="geocoderResultContainer" style="display: none;" class="alert alert-warning">
-				<!--<span data-i18n="productDetail.isNotVisible">This product is not visible to customers.</span>-->
-				<span id="geocoderResult"></span>
-			</div>
 
 		</div>
 
