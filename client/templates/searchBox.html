@@ -5,14 +5,16 @@
 		<input type="text" id="searchBox" placeholder="Search Products...">
 	-->
 
-		<div style="float: left; margin-left: 50px;">
-			<label for="searchBoxDate" class="control-label" data-i18n="shop.search.searchBoxDateLabel">Date</label>:
+		<div class="searchBox">
+			<label for="searchBoxDate" class="control-label" data-i18n="shop.search.searchBoxDateLabel">Date</label>
+			<br/>
 			<input type="text" id="searchBoxDate" placeholder="{{i18n 'shop.search.searchBoxDatePlaceholder' 'By Date...'}}">
 			<span id="searchBoxDateClear" ><i class="input-clear-icon fa fa-times-circle"></i></span>
 		</div>
 
-		<div>
-			<label for="searchBoxLocation" class="control-label" data-i18n="shop.search.searchBoxLocationLabel">Place</label>:
+		<div class="searchBox">
+			<label for="searchBoxLocation" class="control-label" data-i18n="shop.search.searchBoxLocationLabel">Place</label>
+			<br/>
 			<input type="text" id="searchBoxLocation" placeholder="{{i18n 'shop.search.searchBoxLocationPlaceholder' 'By Location...'}}">
 			<span id="searchBoxLocationClear" ><i class="input-clear-icon fa fa-times-circle"></i></span>
 
@@ -21,6 +23,9 @@
 				<span id="geocoderResult"></span>
 			</div>
 
+		</div>
+
+		<div style="clear: both;">
 		</div>
 
 	</div>

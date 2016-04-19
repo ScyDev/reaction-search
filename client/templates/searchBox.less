@@ -4,10 +4,44 @@
 		padding-top: 20px;
 }
 
-#searchBox {
-	width: 400px;
-	height: 30px;
+.searchBox {
+	float: left;
+	min-width: 220px;
+	width: 50%;
 	padding: 0 5px;
+}
+
+.searchBox input {
+	min-width: 180px;
+}
+
+@media screen and (max-width: 480px) {
+  .searchBox {
+		float: none;
+		width: 80%;
+		margin: 0 auto 10px auto;
+  }
+}
+@media screen and (min-width: 480px) {
+  .searchBox {
+		padding-left: 20px;
+		text-align: left;
+  }
+}
+
+@media screen and (min-width: 767px) {
+	.search-box-container {
+		width: 80%;
+		margin: 0 auto;
+	}
+
+	.searchBox input {
+		width: 90%;
+	}
+}
+
+.searchBox label {
+	white-space: nowrap;
 }
 
 .search-item-price {
