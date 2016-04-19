@@ -101,7 +101,13 @@ Template.searchBox.events(
 						$("#geocoderResultContainer").hide();
 					}
 					else {
-						let addressString = inputAddress;//+", Switzerland";
+						let addressString = inputAddress.trim();//+", Switzerland";
+
+						// trying to prevent errors with postal codes like 6000, 3000, ...
+						// https://productforums.google.com/forum/#!topic/maps-de/KkEJwzrJNiQ
+						if (addressString == "6000") addressString = "Luzern";
+						else if (addressString == "3000") addressString = "Bern";
+						else if (addressString == "4000") addressString = "Basel";
 
 						if (GoogleMaps.loaded()) {
 							var geocoder = new google.maps.Geocoder();
