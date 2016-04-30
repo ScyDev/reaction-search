@@ -130,13 +130,12 @@ Template.searchBox.events(
 			        geocoder.geocode(
 			          {
 			            'address': addressString,
-									'language': 'dfgfdgh',
+									'language': 'de',
 									//'result_type': 'street_address|locality' // not available on client geocode API
 									componentRestrictions: {
 							      country: 'CH',
 							      //postalCode: '2000'
 							    }
-
 								},
 			          function(results, status) {
 			             if(status == google.maps.GeocoderStatus.OK) {
@@ -145,19 +144,24 @@ Template.searchBox.events(
 			                console.log("resolved search : "+location.lat()+"/"+location.lng()+" results: ",results);
 											let properLocationFound = false;
 
-											if (results[0].types[0] == "postal_code"
+											// seems not to be needed since we restrict the result to switzerland only
+											//if (1 == 1) {
+											/*if (results[0].types[0] == "postal_code"
 											 		|| results[0].types[0] == "locality"
-													|| results[0].types[0] == "street_address") {
+													|| results[0].types[0] == "street_address"
+													|| results[0].types[0] == "colloquial_area"
+													|| results[0].types[0] == "sublocality_level_1"
+													|| results[0].types[0] == "sublocality_level_2") {*/
 												// show this as autocomplete: results[0].formatted_address
-												console.log("nearest hit: ",results[0].formatted_address);
+											console.log("nearest hit: ",results[0].formatted_address);
 
-												let filterLocation = location.lat()+"/"+location.lng();
-												console.log("search location new: ",filterLocation," old: ",Session.get('productFilters/location'));
-												Session.set('productFilters/location', filterLocation);
-												Session.set('productFilters/locationUserInput', inputAddress);
+											let filterLocation = location.lat()+"/"+location.lng();
+											console.log("search location new: ",filterLocation," old: ",Session.get('productFilters/location'));
+											Session.set('productFilters/location', filterLocation);
+											Session.set('productFilters/locationUserInput', inputAddress);
 
-												properLocationFound = true;
-											}
+											properLocationFound = true;
+											//}
 
 											if (properLocationFound && inputAddress != null && inputAddress != "" && results[0].formatted_address != "Switzerland") {
 												$("#geocoderResult").html(results[0].formatted_address.replace(", Switzerland", ""));
