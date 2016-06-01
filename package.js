@@ -36,6 +36,7 @@ Package.onUse(function (api, where) {
 
   api.use("reactioncommerce:reaction-router");
   api.use("kadira:blaze-layout@2.3.0");
+  api.use("abpetkov:switchery");
 
   api.use("scydev:reaction-p2p-marketplace-sell-date");
   api.use("rajit:bootstrap3-datepicker");

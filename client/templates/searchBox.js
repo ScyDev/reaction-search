@@ -1,7 +1,7 @@
 
 Template.searchBox.onCreated(
 	function() {
-
+		Session.setDefault( 'productFilters/mealTime', { showLunch: true, showDinner: true } );
 	}
 );
 
@@ -64,20 +64,26 @@ Template.searchBox.onRendered(
 				}, 200);
 			}
 		}
+		
+		const switches = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+		switches.forEach( html => new Switchery(html, { size: "small" }) );
+		const mealFilter = Session.get('productFilters/mealTime')
+		// new Switchery( document.querySelector('#searchBoxMealLunch'), { checked: !mealFilter.lunch, size: "small" });
+		// new Switchery( document.querySelector('#searchBoxMealDinner'), { checked: !mealFilter.dinner, size: "small", color: "#7c8bc7", jackColor: "#9decff" });
 
 		GoogleMaps.load();
 
 	}
 );
 
-Template.searchBox.helpers(
-	{
-		'session': function(input) {
-			console.log("session helper ",input);
+Template.searchBox.helpers({
+	'session': function(input) {
+		console.log("session helper ",input);
     	return Session.get(input);
-		}
-	}
-);
+	},
+	"mealFilterSwitchStatus": filter => Session.get( 'productFilters/mealTime' )[filter] ? "checked" : "",
+
+});
 
 let geocoderTimeout = null;
 
@@ -97,6 +103,14 @@ Template.searchBox.events(
 				console.log("click #searchBoxDateClear ");
 				$("#searchBoxDate").val("");
 				return $("#searchBoxDate").trigger("change", event);
+			},
+			"change #searchBoxMealLunch,#searchBoxMealDinner": function(event) {
+				const mealTimeFilter = {
+					showLunch: $("#searchBoxMealLunch").prop("checked"),
+					showDinner: $("#searchBoxMealDinner").prop("checked"),
+				}
+				console.log("Search by meal time | new:", mealTimeFilter, "old:", Session.get('productFilters/mealTime'));
+				Session.set('productFilters/mealTime', mealTimeFilter);
 			},
 			"change #searchBoxLocation": function(event) {
 				if (geocoderTimeout != null) {
