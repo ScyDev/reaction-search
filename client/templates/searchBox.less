@@ -1,4 +1,7 @@
 
+@import "{reactioncommerce:reaction-ui}/client/styles/variables.less";
+@import "{reactioncommerce:reaction-ui}/client/styles/mixins.less";
+
 .search-box-container {
 		text-align: center;
 		padding-top: 20px;
@@ -50,7 +53,7 @@
 }
 
 .input-clear-icon {
-	margin-left: -20px;
+	margin-left: -24px;
 	margin-right: 20px;
 }
 
@@ -64,5 +67,15 @@
 		top: -8px;
 		left: 20px;
 		padding: 2px;
+  }
+}
+
+.meal-time-wrapper {
+  padding-top: 10px;
+}
+
+@media screen and (min-width: @screen-xs-min) {
+  .meal-time-wrapper .searchBoxMealDinner {
+    padding-left: 10px;
   }
 }
