@@ -10,6 +10,16 @@
 			<br/>
 			<input type="text" id="searchBoxDate" placeholder="{{i18n 'shop.search.searchBoxDatePlaceholder' 'By Date...'}}">
 			<span id="searchBoxDateClear" ><i class="input-clear-icon fa fa-times-circle"></i></span>
+
+			<div class="meal-time-wrapper">
+				<!--
+				<label class="control-label">{{ i18n 'shop.search.searchBoxMealTimeLabel' 'Meal Time' }}</label>
+				<br/> -->
+				<label for="searchBoxMealLunch" class="searchBoxMealLunch control-label">{{ i18n 'shop.search.searchBoxLunch' 'Lunch' }}</label>
+				<input type="checkbox" id="searchBoxMealLunch" class="js-switch" {{mealFilterSwitchStatus "showLunch"}}>
+				<label for="searchBoxMealDinner" class="searchBoxMealDinner control-label">{{ i18n 'shop.search.searchBoxDinner' 'Dinner' }}</label>
+				<input type="checkbox" id="searchBoxMealDinner" class="js-switch" {{mealFilterSwitchStatus "showDinner"}}>
+			</div>
 		</div>
 
 		<div class="searchBox">
@@ -22,16 +32,6 @@
 			<br/>
 			<input type="text" id="searchBoxLocation" placeholder="{{i18n 'shop.search.searchBoxLocationPlaceholder' 'By Location...'}}">
 			<span id="searchBoxLocationClear" ><i class="input-clear-icon fa fa-times-circle"></i></span>
-		</div>
-		
-		<br/>
-		<div class="searchBox">
-			<label class="control-label">{{ i18n 'shop.search.searchBoxMealTimeLabel' 'Meal Time' }}</label>
-			<br/>
-			<label for="searchBoxMealLunch" class="control-label">{{ i18n 'shop.search.searchBoxLunch' 'Lunch' }}</label>
-			<input type="checkbox" id="searchBoxMealLunch" class="js-switch" {{mealFilterSwitchStatus "showLunch"}}>
-			<label for="searchBoxMealDinner" class="control-label">{{ i18n 'shop.search.searchBoxDinner' 'Dinner' }}</label>
-			<input type="checkbox" id="searchBoxMealDinner" class="js-switch" {{mealFilterSwitchStatus "showDinner"}}>
 		</div>
 
 		<div style="clear: both;">
