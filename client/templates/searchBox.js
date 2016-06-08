@@ -7,82 +7,84 @@ Template.searchBox.onCreated(
 
 
 Template.searchBox.onRendered(
-	function() {
-		$.fn.datepicker.dates['de'] = {
-			days: ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
-			daysShort: ["Son", "Mon", "Die", "Mit", "Don", "Fre", "Sam"],
-			daysMin: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
-			months: ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
-			monthsShort: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
-			today: "Heute",
-			monthsTitle: "Monate",
-			clear: "Löschen",
-			weekStart: 1,
-			format: "dd.mm.yyyy"
-		};
+  function() {
+    $.fn.datepicker.dates['de'] = {
+      days: ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
+      daysShort: ["Son", "Mon", "Die", "Mit", "Don", "Fre", "Sam"],
+      daysMin: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
+      months: ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+      monthsShort: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
+      today: "Heute",
+      monthsTitle: "Monate",
+      clear: "Löschen",
+      weekStart: 1,
+      format: "dd.mm.yyyy"
+    };
 
-	  $('#searchBoxDate').datepicker({
-			format: "dd.mm.yyyy",
-			language: "de",
-			autoclose: true
-		});
+    $('#searchBoxDate').datepicker({
+      format: "dd.mm.yyyy",
+      language: "de",
+      autoclose: true
+    });
 
-		// session does not survive page reload?!?
-		if (Session.get('productFilters/forSaleOnDate') != null && $('#searchBoxDate').val() == "") {
-			console.log("setting #searchBoxDate val from session: "+Session.get('productFilters/forSaleOnDate'));
-			$('#searchBoxDate').val(Session.get('productFilters/forSaleOnDate'));
-		}
-		//console.log("wanna set #searchBoxLocation val from session: "+Session.get('productFilters/locationUserInput')+" "+Session.get('productFilters/location'));
-		if (Session.get('productFilters/locationUserInput') != null && $('#searchBoxLocation').val() == "") {
-			// can't use resolved lat/long! need to store original location search string too
-			console.log("setting #searchBoxLocation val from session: "+Session.get('productFilters/locationUserInput'));
-			$('#searchBoxLocation').val(Session.get('productFilters/locationUserInput'));
-		}
+    // session does not survive page reload?!?
+    if (Session.get('productFilters/forSaleOnDate') != null && $('#searchBoxDate').val() == "") {
+      console.log("setting #searchBoxDate val from session: "+Session.get('productFilters/forSaleOnDate'));
+      $('#searchBoxDate').val(Session.get('productFilters/forSaleOnDate'));
+    }
+    //console.log("wanna set #searchBoxLocation val from session: "+Session.get('productFilters/locationUserInput')+" "+Session.get('productFilters/location'));
+    if (Session.get('productFilters/locationUserInput') != null && $('#searchBoxLocation').val() == "") {
+      // can't use resolved lat/long! need to store original location search string too
+      console.log("setting #searchBoxLocation val from session: "+Session.get('productFilters/locationUserInput'));
+      $('#searchBoxLocation').val(Session.get('productFilters/locationUserInput'));
+    }
 
-		// search params from route
-		if (ReactionRouter.current().route.name == "productsSearchPage") {
-			let searchDate = ReactionRouter.getParam("date");
-			let searchLocation = ReactionRouter.getParam("location");
+    // search params from route
+    if (ReactionRouter.current().route.name == "productsSearchPage") {
+      let searchDate = ReactionRouter.getParam("date");
+      let searchLocation = ReactionRouter.getParam("location");
 
-			console.log(searchDate+" "+searchLocation+" ",ReactionRouter.current().route);
+      console.log(searchDate+" "+searchLocation+" ",ReactionRouter.current().route);
 
-			if (searchDate != null) {
-				$('#searchBoxDate').val(searchDate);
-				$('#searchBoxDate').trigger("change");
-			}
+      if (searchDate != null) {
+        $('#searchBoxDate').val(searchDate);
+        $('#searchBoxDate').trigger("change");
+      }
 
-			if (searchLocation != null) {
-				let mapsLoadedCheckInterval = Meteor.setInterval(function() {
-					console.log("checking if GoogleMaps loaded...");
-					if (GoogleMaps.loaded()) {
-						Meteor.clearInterval(mapsLoadedCheckInterval);
-						console.log("cleared mapsLoadedCheckInterval");
+      if (searchLocation != null) {
+        let mapsLoadedCheckInterval = Meteor.setInterval(function() {
+          console.log("checking if GoogleMaps loaded...");
+          if (GoogleMaps.loaded()) {
+            Meteor.clearInterval(mapsLoadedCheckInterval);
+            console.log("cleared mapsLoadedCheckInterval");
 
-						$('#searchBoxLocation').val(searchLocation);
-						$('#searchBoxLocation').trigger("change");
-					}
-				}, 200);
-			}
-		}
-		
-		const switches = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
-		switches.forEach( html => new Switchery(html, { size: "small" }) );
-		const mealFilter = Session.get('productFilters/mealTime')
-		// new Switchery( document.querySelector('#searchBoxMealLunch'), { checked: !mealFilter.lunch, size: "small" });
-		// new Switchery( document.querySelector('#searchBoxMealDinner'), { checked: !mealFilter.dinner, size: "small", color: "#7c8bc7", jackColor: "#9decff" });
+            $('#searchBoxLocation').val(searchLocation);
+            $('#searchBoxLocation').trigger("change");
+          }
+        }, 200);
+      }
+    }
 
-		GoogleMaps.load();
+    redrawSwitches();
 
-	}
+    GoogleMaps.load();
+
+  }
 );
 
 Template.searchBox.helpers({
-	'session': function(input) {
-		console.log("session helper ",input);
-    	return Session.get(input);
-	},
-	"mealFilterSwitchStatus": filter => Session.get( 'productFilters/mealTime' )[filter] ? "checked" : "",
-
+  "mealFilterSwitchStatus": filter => Session.get( 'productFilters/mealTime' )[filter] ? "checked" : "",
+  'tags': () => {
+    tags = ReactionCore.Collections.Tags.find().fetch();
+    tags.push({
+      _id: null,
+      name: "noTag",
+      slug: "noTag"
+    });
+    return tags;
+  },
+  "showTag": tag => Session.get( 'productFilters/tags' ).indexOf(tag) > -1 ? "checked" : "",
+  "i18TagsPath": name => `tags.${name}`
 });
 
 let geocoderTimeout = null;
