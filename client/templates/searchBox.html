@@ -1,42 +1,64 @@
 <template name="searchBox">
 
-	<div class="search-box-container">
-		<!--
-		<input type="text" id="searchBox" placeholder="Search Products...">
-	-->
+  <div class="search-box-container">
+    <!--
+    <input type="text" id="searchBox" placeholder="Search Products...">
+  -->
 
-		<div class="searchBox">
-			<label for="searchBoxDate" class="control-label">{{ i18n 'shop.search.searchBoxDateLabel' 'Date' }}</label>
-			<br/>
-			<input type="text" id="searchBoxDate" placeholder="{{i18n 'shop.search.searchBoxDatePlaceholder' 'By Date...'}}">
-			<span id="searchBoxDateClear" ><i class="input-clear-icon fa fa-times-circle"></i></span>
-		</div>
+    <div class="searchBox">
+      <label for="searchBoxDate" class="control-label">{{ i18n 'shop.search.searchBoxDateLabel' 'Date' }}</label>
+      <br/>
+      <input type="text" id="searchBoxDate" placeholder="{{i18n 'shop.search.searchBoxDatePlaceholder' 'By Date...'}}">
+      <span id="searchBoxDateClear" ><i class="input-clear-icon fa fa-times-circle"></i></span>
+    </div>
 
-		<div class="searchBox">
-			<div id="geocoderResultContainer" style="display: none;" class="alert alert-warning">
-				<!--<span data-i18n="productDetail.isNotVisible">This product is not visible to customers.</span>-->
-				<span id="geocoderResult"></span>
-			</div>
+    {{#if Session "productFilters/showAllMine"}}
+    <div class="searchBox">
+      <label for="searchBoxTitle" class="control-label">{{ i18n 'shop.search.searchBoxTitle' 'Title' }}</label>
+      <br/>
+      <input type="text" id="searchBoxTitle" placeholder="{{i18n 'shop.search.searchBoxTitlePlaceholder' 'By Title...'}}">
+      <span id="searchBoxTitleClear" ><i class="input-clear-icon fa fa-times-circle"></i></span>
+    </div>
 
-			<label for="searchBoxLocation" class="control-label">{{ i18n 'shop.search.searchBoxLocationLabel' 'Place' }}</label>
-			<br/>
-			<input type="text" id="searchBoxLocation" placeholder="{{i18n 'shop.search.searchBoxLocationPlaceholder' 'By Location...'}}">
-			<span id="searchBoxLocationClear" ><i class="input-clear-icon fa fa-times-circle"></i></span>
-		</div>
-		
-		<br/>
-		<div class="searchBox">
-			<label class="control-label">{{ i18n 'shop.search.searchBoxMealTimeLabel' 'Meal Time' }}</label>
-			<br/>
-			<label for="searchBoxMealLunch" class="control-label">{{ i18n 'shop.search.searchBoxLunch' 'Lunch' }}</label>
-			<input type="checkbox" id="searchBoxMealLunch" class="js-switch" {{mealFilterSwitchStatus "showLunch"}}>
-			<label for="searchBoxMealDinner" class="control-label">{{ i18n 'shop.search.searchBoxDinner' 'Dinner' }}</label>
-			<input type="checkbox" id="searchBoxMealDinner" class="js-switch" {{mealFilterSwitchStatus "showDinner"}}>
-		</div>
+    <br/>
+    <br/>
+    <br/>
+    <div class="searchBox">
+      <label class="control-label">{{ i18n 'shop.search.searchBoxTags' 'Tags' }}:</label>&nbsp;
+      <span>
+        {{#each tags}}
+        <label for="tag-{{ slug }}">{{ name }}</label>
+        <input type="checkbox" id="tag-{{ slug }}" class="searchBoxTag js-switch" {{showTag _id}} data-tag="{{ _id }}">
+        {{/each}}
+      </span>
+    </div>
+    {{else}}
+    <div class="searchBox">
+      <div id="geocoderResultContainer" style="display: none;" class="alert alert-warning">
+        <!--<span data-i18n="productDetail.isNotVisible">This product is not visible to customers.</span>-->
+        <span id="geocoderResult"></span>
+      </div>
 
-		<div style="clear: both;">
-		</div>
+      <label for="searchBoxLocation" class="control-label">{{ i18n 'shop.search.searchBoxLocationLabel' 'Place' }}</label>
+      <br/>
+      <input type="text" id="searchBoxLocation" placeholder="{{i18n 'shop.search.searchBoxLocationPlaceholder' 'By Location...'}}">
+      <span id="searchBoxLocationClear" ><i class="input-clear-icon fa fa-times-circle"></i></span>
+    </div>
+    
+    <br/>
+    <div class="searchBox">
+      <label class="control-label">{{ i18n 'shop.search.searchBoxMealTimeLabel' 'Meal Time' }}</label>
+      <br/>
+      <label for="searchBoxMealLunch" class="control-label">{{ i18n 'shop.search.searchBoxLunch' 'Lunch' }}</label>
+      <input type="checkbox" id="searchBoxMealLunch" class="js-switch" {{mealFilterSwitchStatus "showLunch"}}>
+      <label for="searchBoxMealDinner" class="control-label">{{ i18n 'shop.search.searchBoxDinner' 'Dinner' }}</label>
+      <input type="checkbox" id="searchBoxMealDinner" class="js-switch" {{mealFilterSwitchStatus "showDinner"}}>
+    </div>
+    {{/if}}
 
-	</div>
+    <div style="clear: both;">
+    </div>
+
+  </div>
 
 </template>

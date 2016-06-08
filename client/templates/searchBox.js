@@ -1,9 +1,16 @@
+// this.Switchery = Switchery;
 
-Template.searchBox.onCreated(
-	function() {
-		Session.setDefault( 'productFilters/mealTime', { showLunch: true, showDinner: true } );
-	}
-);
+const redrawSwitches = () => {
+	const switches = Array.prototype.slice.call(document.querySelectorAll('.js-switch:not([data-switchery="true"])'));
+	switches.forEach( html => new Switchery(html, { size: "small" }) );
+}
+
+Template.searchBox.onCreated( function() {
+	this.autorun(() => {
+		const showAllMine = Session.get('productFilters/showAllMine');
+		Meteor.setTimeout( redrawSwitches, 1 );
+	})
+});
 
 
 Template.searchBox.onRendered(
@@ -65,11 +72,7 @@ Template.searchBox.onRendered(
 			}
 		}
 		
-		const switches = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
-		switches.forEach( html => new Switchery(html, { size: "small" }) );
-		const mealFilter = Session.get('productFilters/mealTime')
-		// new Switchery( document.querySelector('#searchBoxMealLunch'), { checked: !mealFilter.lunch, size: "small" });
-		// new Switchery( document.querySelector('#searchBoxMealDinner'), { checked: !mealFilter.dinner, size: "small", color: "#7c8bc7", jackColor: "#9decff" });
+		redrawSwitches();
 
 		GoogleMaps.load();
 
@@ -77,11 +80,9 @@ Template.searchBox.onRendered(
 );
 
 Template.searchBox.helpers({
-	'session': function(input) {
-		console.log("session helper ",input);
-    	return Session.get(input);
-	},
+	'tags': () => ReactionCore.Collections.Tags.find().fetch(),
 	"mealFilterSwitchStatus": filter => Session.get( 'productFilters/mealTime' )[filter] ? "checked" : "",
+	"showTag": tag => Session.get( 'productFilters/tags' )[tag] ? "checked" : "",
 
 });
 
@@ -104,13 +105,31 @@ Template.searchBox.events(
 				$("#searchBoxDate").val("");
 				return $("#searchBoxDate").trigger("change", event);
 			},
-			"change #searchBoxMealLunch,#searchBoxMealDinner": function(event) {
-				const mealTimeFilter = {
+			"change #searchBoxTitle": function(event) {
+				const value = event.target.value;
+				// console.log("search title new:", value, "old:", Session.get('productFilters/query'));
+				Session.set('productFilters/query', value);
+			},
+			"keyup #searchBoxTitle": function(event) {
+				console.log("keyup #searchBoxTitle ",event.target.value);
+				return $("#searchBoxTitle").trigger("change", event);
+			},
+			"click #searchBoxTitleClear": function(event) {
+				console.log("click #searchBoxTitleClear ");
+				$("#searchBoxTitle").val("");
+				return $("#searchBoxTitle").trigger("change", event);
+			},
+			"change #searchBoxMealLunch,#searchBoxMealDinner": () =>
+				Session.set('productFilters/mealTime', {
 					showLunch: $("#searchBoxMealLunch").prop("checked"),
 					showDinner: $("#searchBoxMealDinner").prop("checked"),
-				}
-				console.log("Search by meal time | new:", mealTimeFilter, "old:", Session.get('productFilters/mealTime'));
-				Session.set('productFilters/mealTime', mealTimeFilter);
+				}),
+			"change .searchBoxTag": (event) => {
+				const checked = event.target.checked;
+				const tag = event.target.attributes["data-tag"].value;
+				const tags = Session.get('productFilters/tags') || [];
+				if( checked ) tags.push(tag); else delete tags[tag];
+				Session.set('productFilters/tags', tags);
 			},
 			"change #searchBoxLocation": function(event) {
 				if (geocoderTimeout != null) {
