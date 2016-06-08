@@ -6,7 +6,11 @@
   -->
 
     <div class="searchBox">
+      {{#if Session "productFilters/showAllMine"}}
+      <label for="searchBoxDate" class="control-label">{{ i18n 'shop.search.searchBoxSaleOnDateLabel' 'For sale on date' }}</label>
+      {{else}}
       <label for="searchBoxDate" class="control-label">{{ i18n 'shop.search.searchBoxDateLabel' 'Date' }}</label>
+      {{/if}}
       <br/>
       <input type="text" id="searchBoxDate" placeholder="{{i18n 'shop.search.searchBoxDatePlaceholder' 'By Date...'}}">
       <span id="searchBoxDateClear" ><i class="input-clear-icon fa fa-times-circle"></i></span>
@@ -23,14 +27,15 @@
     <br/>
     <br/>
     <br/>
-    <div class="searchBox">
-      <label class="control-label">{{ i18n 'shop.search.searchBoxTags' 'Tags' }}:</label>&nbsp;
-      <span>
-        {{#each tags}}
-        <label for="tag-{{ slug }}">{{ name }}</label>
+    <div class="searchBox" style="width: 100%;">
+      <label class="control-label">{{ i18n 'productDetail.tags' 'Tags' }}:</label>&nbsp;
+      {{#each tags}}
+      <span style="display: inline-block;">
+        <label for="tag-{{ slug }}">{{ i18n (i18TagsPath name) name }}</label>
         <input type="checkbox" id="tag-{{ slug }}" class="searchBoxTag js-switch" {{showTag _id}} data-tag="{{ _id }}">
-        {{/each}}
+        &nbsp;&nbsp;
       </span>
+      {{/each}}
     </div>
     {{else}}
     <div class="searchBox">
