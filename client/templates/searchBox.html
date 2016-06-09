@@ -34,11 +34,9 @@
       <span id="searchBoxTitleClear" ><i class="input-clear-icon fa fa-times-circle"></i></span>
     </div>
 
-    <br/>
-    <br/>
-    <br/>
-    <div class="searchBox" style="width: 100%;">
+    <div class="searchBox tagFilter" style="width: 100%;">
       <label class="control-label">{{ i18n 'productDetail.tags' 'Tags' }}:</label>&nbsp;
+      <br />
       {{#each tags}}
       <span style="display: inline-block;">
         <label for="tag-{{ slug }}">{{ i18n (i18TagsPath name) name }}</label>
