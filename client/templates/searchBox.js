@@ -71,7 +71,7 @@ Template.searchBox.onRendered(
         }, 200);
       }
     }
-    
+
     redrawSwitches();
 
     GoogleMaps.load();
@@ -85,8 +85,8 @@ Template.searchBox.helpers({
     tags = ReactionCore.Collections.Tags.find().fetch();
     tags.push({
       _id: null,
-      name: "notag",
-      slug: "notag"
+      name: "noTag",
+      slug: "noTag"
     });
     return tags;
   },
