@@ -15,6 +15,7 @@
       <input type="text" id="searchBoxDate" placeholder="{{i18n 'shop.search.searchBoxDatePlaceholder' 'By Date...'}}">
       <span id="searchBoxDateClear" ><i class="input-clear-icon fa fa-times-circle"></i></span>
 
+      {{#unless Session "productFilters/showAllMine"}}
       <div class="meal-time-wrapper">
         <!--
         <label class="control-label">{{ i18n 'shop.search.searchBoxMealTimeLabel' 'Meal Time' }}</label>
@@ -24,6 +25,7 @@
         <label for="searchBoxMealDinner" class="searchBoxMealDinner control-label">{{ i18n 'shop.search.searchBoxDinner' 'Dinner' }}</label>
         <input type="checkbox" id="searchBoxMealDinner" class="js-switch" {{mealFilterSwitchStatus "showDinner"}}>
       </div>
+      {{/unless}}
     </div>
 
     {{#if Session "productFilters/showAllMine"}}
