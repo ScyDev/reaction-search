@@ -1,166 +1,159 @@
-// this.Switchery = Switchery;
-
 const redrawSwitches = () => {
   const switches = Array.prototype.slice.call(document.querySelectorAll(".js-switch:not([data-switchery='true'])"));
-  switches.forEach( html => new Switchery(html, { size: "small" }) );
+  switches.forEach(html => new Switchery(html, { size: "small" }));
 }
 
-Template.searchBox.onCreated( function() {
-  this.autorun(() => {
-    Session.get("productFilters/showAllMine");
-    Meteor.setTimeout( redrawSwitches, 1 );
-  })
+Template.searchBox.onCreated(function() {
+  // console.log("searchBox", this.data);
+  /* Copy 'data' content into own context as data is not immediately available after route change */
+  this.filtersAccessor = this.data.filtersAccessor;
+  this.filters = this.data.filters;
 });
 
+Template.searchBox.onRendered(function() {
+  const filtersAccessor = this.filtersAccessor;
+  $.fn.datepicker.dates["de"] = {
+    days: ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
+    daysShort: ["Son", "Mon", "Die", "Mit", "Don", "Fre", "Sam"],
+    daysMin: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
+    months: ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+    monthsShort: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
+    today: "Heute",
+    monthsTitle: "Monate",
+    clear: "Löschen",
+    weekStart: 1,
+    format: "dd.mm.yyyy"
+  };
 
-Template.searchBox.onRendered(
-  function() {
-    $.fn.datepicker.dates["de"] = {
-      days: ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
-      daysShort: ["Son", "Mon", "Die", "Mit", "Don", "Fre", "Sam"],
-      daysMin: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
-      months: ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
-      monthsShort: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
-      today: "Heute",
-      monthsTitle: "Monate",
-      clear: "Löschen",
-      weekStart: 1,
-      format: "dd.mm.yyyy"
-    };
+  const searchBoxDate = $("#searchBoxDate");
+  searchBoxDate.datepicker({
+    format: "dd.mm.yyyy",
+    language: "de",
+    autoclose: true,
+  });
 
-    $("#searchBoxDate").datepicker({
-      format: "dd.mm.yyyy",
-      language: "de",
-      autoclose: true
-    });
+  /* Restore filter values in the search fields */
+  $("#searchBoxData").val(Session.get(`${filtersAccessor}/filters/forSaleOnDate`));
+  $("#searchBoxTitle").val(Session.get(`${filtersAccessor}/filters/query`));
 
-    // session does not survive page reload?!?
-    if (Session.get("productFilters/forSaleOnDate") != null && $("#searchBoxDate").val() == "") {
-      console.log("setting #searchBoxDate val from session: "+Session.get("productFilters/forSaleOnDate"));
-      $("#searchBoxDate").val(Session.get("productFilters/forSaleOnDate"));
-    }
-    //console.log("wanna set #searchBoxLocation val from session: "+Session.get("productFilters/locationUserInput")+" "+Session.get("productFilters/location"));
-    if (Session.get("productFilters/locationUserInput") != null && $("#searchBoxLocation").val() == "") {
-      // can"t use resolved lat/long! need to store original location search string too
-      console.log("setting #searchBoxLocation val from session: "+Session.get("productFilters/locationUserInput"));
-      $("#searchBoxLocation").val(Session.get("productFilters/locationUserInput"));
-    }
+  // session does not survive page reload?!?
+  const forSaleOnDate = Session.get(`${filtersAccessor}/filters/forSaleOnDate`);
+  if (forSaleOnDate && searchBoxDate.val() == "") searchBoxDate.val(forSaleOnDate);
 
-    // search params from route
-    if (ReactionRouter.current().route.name === "productsSearchPage") {
-      let searchDate = ReactionRouter.getParam("date");
-      let searchLocation = ReactionRouter.getParam("location");
+  // can"t use resolved lat/long! need to store original location search string too
+  const locationUserInput = Session.get(`${filtersAccessor}/filters/locationUserInput`);
+  const searchBoxLocation = $("#searchBoxLocation");
+  if (locationUserInput && searchBoxLocation.val() == "") searchBoxLocation.val(locationUserInput);
 
-      console.log(searchDate, searchLocation, ReactionRouter.current().route);
+  // search params from route
+  if (ReactionRouter.current().route.name === "productsSearchPage") {
+    const searchDate = ReactionRouter.getParam("date");
+    const searchLocation = ReactionRouter.getParam("location");
 
-      if (searchDate != null) {
-        $("#searchBoxDate").val(searchDate);
-        $("#searchBoxDate").trigger("change");
-      }
+    console.log(searchDate, searchLocation, ReactionRouter.current().route);
 
-      if (searchLocation != null) {
-        let mapsLoadedCheckInterval = Meteor.setInterval(function() {
-          console.log("checking if GoogleMaps loaded...");
-          if (GoogleMaps.loaded()) {
-            Meteor.clearInterval(mapsLoadedCheckInterval);
-            console.log("cleared mapsLoadedCheckInterval");
-
-            $("#searchBoxLocation").val(searchLocation);
-            $("#searchBoxLocation").trigger("change");
-          }
-        }, 200);
-      }
+    if (searchDate) {
+      searchBoxDate.val(searchDate);
+      searchBoxDate.trigger("change");
     }
 
-    /* Restore filter values in the search fields */
-    $("#searchBoxData").val(Session.get("productFilters/forSaleOnDate"));
-    $("#searchBoxTitle").val(Session.get("productFilters/query"));
-    $("#searchBoxLocation").val(Session.get("productFilters/locationUserInput"));
-    
-    redrawSwitches();
-
-    GoogleMaps.load();
-
+    if (searchLocation) {
+      const mapsLoadedCheckInterval = Meteor.setInterval(() => {
+        if (GoogleMaps.loaded()) {
+          Meteor.clearInterval(mapsLoadedCheckInterval);
+          searchBoxLocation.val(searchLocation);
+          searchBoxLocation.trigger("change");
+        }
+      }, 200);
+    }
   }
-);
+
+  redrawSwitches();
+
+  GoogleMaps.load({ key: "AIzaSyCmlt5MvBoOU-DXW57z8ehNzz4AO_bL418" }); // TODO: Get API key from settings
+});
 
 Template.searchBox.helpers({
-  "mealFilterSwitchStatus": filter => Session.get( "productFilters/mealTime" )[filter] ? "checked" : "",
-  "tags": () => {
-    tags = ReactionCore.Collections.Tags.find().fetch();
+  mealFilterSwitchStatus: filter => {
+    const toggleStates = Session.get(`${Template.instance().filtersAccessor}/filters/mealTime`);
+    return toggleStates && toggleStates[filter] ? "checked" : "";
+  },
+
+  tags: () => {
+    const tags = ReactionCore.Collections.Tags.find().fetch();
     tags.push({
       _id: null,
       name: "noTag",
-      slug: "noTag"
+      slug: "noTag",
     });
     return tags;
   },
-  "showTag": tag => Session.get( "productFilters/tags" ).indexOf(tag) > -1 ? "checked" : "",
-  "i18TagsPath": name => `tags.${name}`
+
+  showTag: tag => {
+    const tags = Session.get(`${Template.instance().filtersAccessor}/filters/tags`);
+    return tags && tags.indexOf(tag) > -1 ? "checked" : "";
+  },
+
+  i18TagsPath: name => `tags.${name}`,
+
+  showFilter: filter => {
+    const show = Template.instance().filters[filter];
+    return typeof show !== "undefined" ? show : true;
+  },
 });
 
 let geocoderTimeout = null;
 
 Template.searchBox.events({
   "change #searchBoxDate": function(event) {
-    const value = event.target.value;
-    let filterDate = value;
-    console.log("search date new: ",filterDate," old: ",Session.get("productFilters/forSaleOnDate"));
-    Session.set("productFilters/forSaleOnDate", filterDate);
+    const filterDate = event.target.value;
+    Session.set(`${Template.instance().filtersAccessor}/filters/forSaleOnDate`, filterDate);
   },
   "keyup #searchBoxDate": function(event) {
-    console.log("keyup #searchBoxDate ",event.target.value);
     return $("#searchBoxDate").trigger("change", event);
   },
   "click #searchBoxDateClear": function(event) {
-    console.log("click #searchBoxDateClear ");
     $("#searchBoxDate").val("");
     return $("#searchBoxDate").trigger("change", event);
   },
   "change #searchBoxTitle": function(event) {
     const value = event.target.value;
-    console.log("search title new:", value, "old:", Session.get("productFilters/query"));
-    Session.set("productFilters/query", value);
+    Session.set(`${Template.instance().filtersAccessor}/filters/query`, value);
   },
   "keyup #searchBoxTitle": function(event) {
-    console.log("keyup #searchBoxTitle ", event.target.value);
     return $("#searchBoxTitle").trigger("change", event);
   },
   "click #searchBoxTitleClear": function(event) {
-    console.log("click #searchBoxTitleClear ");
     $("#searchBoxTitle").val("");
     return $("#searchBoxTitle").trigger("change", event);
   },
   "change #searchBoxMealLunch,#searchBoxMealDinner": () =>
-    Session.set("productFilters/mealTime", {
+    Session.set(`${Template.instance().filtersAccessor}/filters/mealTime`, {
       showLunch: $("#searchBoxMealLunch").prop("checked"),
       showDinner: $("#searchBoxMealDinner").prop("checked"),
     }),
   "change .searchBoxTag": (event) => {
     const checked = event.target.checked;
     const tag = event.target.attributes["data-tag"] ? event.target.attributes["data-tag"].value : null;
-    const tags = Session.get("productFilters/tags") || [];
-    if( checked ) tags.push(tag); else {
+    const tags = Session.get(`${Template.instance().filtersAccessor}/filters/tags`) || [];
+    if( checked ) tags.push(tag);
+    else {
       const idx = tags.indexOf(tag);
-      if( idx > -1 ) tags.splice(idx, 1);
+      if (idx > -1) tags.splice(idx, 1);
     }
-    Session.set("productFilters/tags", tags);
+    Session.set(`${Template.instance().filtersAccessor}/filters/tags`, tags);
   },
   "change #searchBoxLocation": function(event) {
-    if (geocoderTimeout != null) {
-      console.log("clearing geocoderTimeout");
-      Meteor.clearTimeout(geocoderTimeout);
-    }
+    const filtersAccessor = Template.instance().filtersAccessor;
 
-    console.log("adding geocoderTimeout");
+    if (geocoderTimeout != null) Meteor.clearTimeout(geocoderTimeout);
+
     geocoderTimeout = Meteor.setTimeout(function() {
-      console.log("executing geocoderTimeout");
-
       const inputAddress = event.target.value;
 
       if (inputAddress == null || inputAddress.trim() == "") {
-        Session.set("productFilters/location", null);
-        Session.set("productFilters/locationUserInput", null);
+        Session.set(`${filtersAccessor}/filters/location`, null);
+        Session.set(`${filtersAccessor}/filters/locationUserInput`, null);
         $("#geocoderResultContainer").hide();
       }
       else {
@@ -173,7 +166,7 @@ Template.searchBox.events({
         else if (addressString == "4000") addressString = "Basel";
 
         if (GoogleMaps.loaded()) {
-          var geocoder = new google.maps.Geocoder();
+          const geocoder = new google.maps.Geocoder();
 
           geocoder.geocode(
             {
@@ -188,9 +181,7 @@ Template.searchBox.events({
             function(results, status) {
                if(status == google.maps.GeocoderStatus.OK) {
                   let location = results[0].geometry.location;
-                  //console.log("resolved search : ",results);
                   console.log("resolved search : "+location.lat()+"/"+location.lng()+" results: ",results);
-                  let properLocationFound = false;
 
                   // seems not to be needed since we restrict the result to switzerland only
                   //if (1 == 1) {
@@ -204,27 +195,22 @@ Template.searchBox.events({
                   console.log("nearest hit: ",results[0].formatted_address);
 
                   let filterLocation = location.lat()+"/"+location.lng();
-                  console.log("search location new:", filterLocation, "old:", Session.get("productFilters/location"));
-                  Session.set("productFilters/location", filterLocation);
-                  Session.set("productFilters/locationUserInput", inputAddress);
+                  console.log("search location new:", filterLocation, "old:", Session.get(`${filtersAccessor}/filters/location`));
+                  Session.set(`${filtersAccessor}/filters/location`, filterLocation);
+                  Session.set(`${filtersAccessor}/filters/locationUserInput`, inputAddress);
 
-                  properLocationFound = true;
-                  //}
-
-                  if (properLocationFound && inputAddress != null && inputAddress != "" && results[0].formatted_address != "Switzerland") {
+                  if (inputAddress != null && inputAddress != "" && results[0].formatted_address != "Switzerland") {
                     $("#geocoderResult").html(results[0].formatted_address.replace(", Switzerland", ""));
                     $("#geocoderResultContainer").show();
-                  }
-                  else {
+                  } else {
                     $("#geocoderResult").html(i18next.t("products.noLocationFound", {defaultValue: "No location found"}));
                     //$("#geocoderResultContainer").hide();
                   }
-                }
-                else {
+                } else {
                   console.log("geocoder fail: ",results," ",status);
 
-                  Session.set("productFilters/location", "9999999999999999,99999999999999999");
-                  Session.set("productFilters/locationUserInput", null);
+                  Session.set(`${filtersAccessor}/filters/location`, "9999999999999999,99999999999999999");
+                  Session.set(`${filtersAccessor}/filters/locationUserInput`, null);
 
                   $("#geocoderResult").html(i18next.t("products.noLocationFound", {defaultValue: "No location found"}));
                   //$("#geocoderResultContainer").hide();
@@ -233,20 +219,13 @@ Template.searchBox.events({
           );
         }
       }
-
     }, 500);
   },
   "keyup #searchBoxLocation": function(event) {
-    const inputAddress = event.target.value;
-    console.log("keyup #searchBoxLocation ",event.target.value);
     return $("#searchBoxLocation").trigger("change", event);
   },
   "click #searchBoxLocationClear": function(event) {
-    console.log("click #searchBoxLocationClear ");
     $("#searchBoxLocation").val("");
     return $("#searchBoxLocation").trigger("change", event);
   },
 });
-
-// ---
-// generated by coffee-script 1.9.2
