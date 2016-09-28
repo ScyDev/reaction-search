@@ -1,3 +1,6 @@
+
+Template.searchBoxMarketplace.replaces("searchBox");
+
 const redrawSwitches = () => {
   const switches = Array.prototype.slice.call(document.querySelectorAll(".js-switch:not([data-switchery='true'])"));
   switches.forEach(html => new Switchery(html, { size: "small" }));
